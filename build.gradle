@@ -1,0 +1,16 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+sourceCompatibility = 1.8
+group = 'com.foreks.feed'
+version = '1.0-SNAPSHOT'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                   'Implementation-Version': version
+    }
+}
+repositories {
+	mavenLocal()
+    mavenCentral()
+}
