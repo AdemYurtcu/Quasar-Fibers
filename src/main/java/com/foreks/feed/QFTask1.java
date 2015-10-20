@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import co.paralleluniverse.fibers.Fiber;
@@ -18,56 +17,69 @@ import co.paralleluniverse.strands.channels.Channels;
 
 public class QFTask1 {
 
-    private static Channel<String>   channel = Channels.newChannel(1000, Channels.OverflowPolicy.BLOCK, true, true);
-    private static ArrayList<String> ls      = new ArrayList<String>();
-
     public static void main(final String[] args) throws IOException, ExecutionException, InterruptedException, SuspendExecution {
-        reader();
+
         writer();
+
         System.out.println("Task is complated");
     }
     static int i;
 
     private static void writer() throws ExecutionException, InterruptedException {
-        for (i = 0; i < 100; i++) {
+        for (i = 0; i < 1000; i++) {
             new Fiber<Void>("writer " + i, new SuspendableRunnable() {
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public void run() throws SuspendExecution, InterruptedException {
-
-                    final File f = new File("Results/writer" + i + ".txt");
-                    if (!f.exists()) {
-                        try {
-                            f.createNewFile();
-                        } catch (final IOException e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }
-                    PrintWriter pWriter = null;
+                    Channel<String> channel;
                     try {
-                        pWriter = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
-                        for (int j = 0; j < ls.size(); j++) {
-                            pWriter.println(ls.get(j));
+                        channel = createChannel();
+                        final File f = new File("Results/writer" + i + ".txt");
+                        if (!f.exists()) {
+                            try {
+                                f.createNewFile();
+                            } catch (final IOException e) {
+                                System.out.println(e.getMessage());
+                            }
+                        }
+                        PrintWriter pWriter = null;
+
+                        try {
+                            pWriter = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
+                        } catch (final IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        while (!channel.isClosed()) {
+                            pWriter.println(channel.receive());
                         }
 
-                    } catch (final IOException e) {
+                        pWriter.close();
+                    } catch (final IOException e1) {
                         // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        e1.printStackTrace();
                     }
-                    pWriter.close();
 
                 }
 
             }).start().join();
         }
+
     }
 
-    private static void reader() throws IOException {
-
+    public static Channel<String> createChannel() throws IOException {
+        final Channel<String> channel = Channels.newChannel(1200, Channels.OverflowPolicy.BLOCK, true, true);
         Files.lines(Paths.get("File.txt")).forEach(s -> {
-            ls.add(s);
+            try {
+                channel.send(s);
+            } catch (final Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         });
+        channel.close();
+        return channel;
     }
 
 }
