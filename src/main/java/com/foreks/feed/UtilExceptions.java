@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public final class UtilException {
+public final class UtilExceptions {
 
     @FunctionalInterface
     public interface Consumer_WithExceptions<T> {
@@ -27,7 +27,7 @@ public final class UtilException {
     }
 
     /** .forEach(rethrowConsumer(name -> System.out.println(Class.forName(name)))); or .forEach(rethrowConsumer(ClassNameUtil::println)); */
-    public static <T> Consumer<T> rethrowConsumer(final Consumer_WithExceptions<T> consumer) {
+    public static <T> Consumer<T> rethroConsumer(final Consumer_WithExceptions<T> consumer) {
         return t -> {
             try {
                 consumer.accept(t);

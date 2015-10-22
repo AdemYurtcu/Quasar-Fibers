@@ -10,13 +10,13 @@ import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.strands.SuspendableRunnable;
 import co.paralleluniverse.strands.channels.Channel;
 
-public class FileWriterFiber implements SuspendableRunnable {
-
+public class FileWriterFibers implements SuspendableRunnable {
+    private static final long     serialVersionUID = 1L;
     private final Channel<String> channel;
     private final int             id;
     private PrintWriter           pWriter;
 
-    public FileWriterFiber(final int id, final Channel<String> c) {
+    public FileWriterFibers(final int id, final Channel<String> c) {
         this.channel = c;
         this.id = id;
         final File f = new File("Results/File" + this.id + ".txt");
@@ -42,7 +42,6 @@ public class FileWriterFiber implements SuspendableRunnable {
     public void run() throws SuspendExecution, InterruptedException {
         while (!this.channel.isClosed()) {
             final String receiveStr = this.channel.receive();
-            System.out.println(this.id + " msg <- " + receiveStr);
             this.pWriter.println(receiveStr);
         }
         this.pWriter.close();
