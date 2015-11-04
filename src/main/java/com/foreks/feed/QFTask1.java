@@ -4,30 +4,16 @@ import static com.foreks.feed.UtilExceptions.rethroConsumer;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
-
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
 
 import co.paralleluniverse.fibers.Fiber;
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
 
-@State(Scope.Benchmark)
 public class QFTask1 {
     private static FileReaderFiber fileReader = null;
 
-    @Setup
     public static void loadingFile() throws IOException {
         fileReader = new FileReaderFiber();
 
@@ -40,12 +26,6 @@ public class QFTask1 {
     }
     static int i;
 
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MILLISECONDS)
-    @Warmup(iterations = 5)
-    @Measurement(iterations = 5)
-    @Fork(1)
     public static void writer() throws ExecutionException, InterruptedException, SuspendExecution {
 
         IntStream.range(0, 100)

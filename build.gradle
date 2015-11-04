@@ -10,7 +10,55 @@ jar {
                    'Implementation-Version': version
     }
 }
+
 repositories {
 	mavenLocal()
     mavenCentral()
 }
+sourceSets{
+	perf
+}
+configurations{
+	perfCompile
+}
+project.sourceSets.perf {
+  compileClasspath += project.configurations.perfCompile + project.sourceSets.main.output
+  runtimeClasspath += project.configurations.perfCompile + project.sourceSets.main.output
+}
+dependencies{
+	compile 'co.paralleluniverse:quasar-core:0.7.3'
+	compile 'com.lmax:disruptor:3.3.2'
+	compile 'org.apache.commons:commons-collections4:4.0'
+    compile (
+      [group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.0'],
+      [group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.0']
+  )
+  perfCompile (
+      [project.configurations.compile]
+  )
+}
+task perfJar(type: Jar, dependsOn: perfClasses) {
+  doFirst {
+    from (project.configurations.perfCompile.collect {it.isDirectory() ? it : project.zipTree(it)}) {
+      exclude '**/META-INF/services/**'
+      exclude '**/META-INF/*.SF'
+      exclude '**/META-INF/*.DSA'
+      exclude '**/META-INF/*.RSA'
+    }
+    from project.sourceSets.perf.output
+    from project.sourceSets.main.output
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+  }
+
+  manifest {
+    attributes 'Main-Class':'org.openjdk.jmh.Main'
+  }
+
+  classifier = 'jmh'
+}
+task jmh(type: JavaExec, dependsOn: perfJar) {
+  main = 'org.openjdk.jmh.Main'
+  classpath = project.files(project.perfJar.archivePath) + project.sourceSets.main.runtimeClasspath
+}
+
+

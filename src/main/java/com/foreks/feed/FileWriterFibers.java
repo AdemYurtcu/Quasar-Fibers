@@ -22,6 +22,7 @@ public class FileWriterFibers implements SuspendableRunnable {
         final File f = new File("Results/File" + this.id + ".txt");
         if (!f.exists()) {
             try {
+                f.mkdirs();
                 f.createNewFile();
             } catch (final IOException e) {
                 System.out.println(e.getMessage());
