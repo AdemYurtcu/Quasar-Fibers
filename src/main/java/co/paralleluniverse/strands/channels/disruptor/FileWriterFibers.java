@@ -1,4 +1,4 @@
-package com.foreks.feed;
+package co.paralleluniverse.strands.channels.disruptor;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,24 +11,22 @@ import co.paralleluniverse.strands.SuspendableRunnable;
 import co.paralleluniverse.strands.channels.Channel;
 
 public class FileWriterFibers implements SuspendableRunnable {
-    private static final long     serialVersionUID = 1L;
-    private final Channel<String> channel;
-    private final int             id;
-    private PrintWriter           pWriter;
+    private static final long          serialVersionUID = 1L;
+    private final Channel<StringEvent> channel;
+    private final int                  id;
+    private PrintWriter                pWriter;
 
-    public FileWriterFibers(final int id, final Channel<String> c) {
-        this.channel = c;
+    public FileWriterFibers(final int id, final Channel<StringEvent> channel2, final String folder) {
+        this.channel = channel2;
         this.id = id;
-        final File f = new File("Results/File" + this.id + ".txt");
+        final File f = new File("Results" + folder + "/File" + this.id + ".txt");
         if (!f.exists()) {
             try {
-                f.mkdirs();
                 f.createNewFile();
             } catch (final IOException e) {
                 System.out.println(e.getMessage());
             }
         }
-
         try {
             final FileWriter fileWriter = new FileWriter(f, true);
             final BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -41,9 +39,9 @@ public class FileWriterFibers implements SuspendableRunnable {
 
     @Override
     public void run() throws SuspendExecution, InterruptedException {
-        while (!this.channel.isClosed()) {
-            final String receiveStr = this.channel.receive();
-            this.pWriter.println(receiveStr);
+        final StringEvent receiveStr = this.channel.receive();
+        while (!"end".equals(receiveStr.getValue())) {
+            this.pWriter.println(receiveStr.getValue());
         }
         this.pWriter.close();
 

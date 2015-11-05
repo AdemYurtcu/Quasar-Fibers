@@ -26,7 +26,7 @@ project.sourceSets.perf {
   runtimeClasspath += project.configurations.perfCompile + project.sourceSets.main.output
 }
 dependencies{
-	compile 'co.paralleluniverse:quasar-core:0.7.3'
+	compile 'co.paralleluniverse:quasar-core:0.7.4-SNAPSHOT'
 	compile 'com.lmax:disruptor:3.3.2'
 	compile 'org.apache.commons:commons-collections4:4.0'
     compile (

@@ -1,4 +1,4 @@
-package com.foreks.feed;
+package co.paralleluniverse.strands.channels.disruptor;
 
 import java.io.BufferedWriter;
 import java.io.File;

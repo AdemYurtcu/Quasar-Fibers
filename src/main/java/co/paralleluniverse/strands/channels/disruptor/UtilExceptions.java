@@ -1,4 +1,4 @@
-package com.foreks.feed;
+package co.paralleluniverse.strands.channels.disruptor;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
