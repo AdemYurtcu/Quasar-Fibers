@@ -12,7 +12,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import co.paralleluniverse.strands.channels.disruptor.QFTask2;
+import com.foreks.feed.QFTask2;
 
 @State(Scope.Benchmark)
 public class QFTask2Jmh {

@@ -11,7 +11,7 @@ import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
 
-import co.paralleluniverse.strands.channels.disruptor.QFTask3;
+import com.foreks.feed.QFTask3;
 
 public class QFTask3Jmh {
     @Benchmark

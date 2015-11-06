@@ -1,4 +1,4 @@
-package co.paralleluniverse.strands.channels.disruptor;
+package com.foreks.feed;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,6 +8,7 @@ import com.lmax.disruptor.Sequence;
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.strands.Timeout;
 import co.paralleluniverse.strands.channels.Channel;
+import co.paralleluniverse.strands.channels.disruptor.DisruptorReceiveChannel;
 
 public class DisruptorChannel extends DisruptorReceiveChannel<StringEvent> implements Channel<StringEvent> {
 

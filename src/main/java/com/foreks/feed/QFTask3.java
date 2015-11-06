@@ -1,4 +1,4 @@
-package co.paralleluniverse.strands.channels.disruptor;
+package com.foreks.feed;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -10,6 +10,7 @@ import com.lmax.disruptor.Sequence;
 
 import co.paralleluniverse.fibers.Fiber;
 import co.paralleluniverse.strands.channels.Channel;
+import co.paralleluniverse.strands.channels.disruptor.StrandBlockingWaitStrategy;
 
 public class QFTask3 {
     public static final RingBuffer<StringEvent> buffer = RingBuffer.createSingleProducer(StringEvent.FACTORY, 1024, new StrandBlockingWaitStrategy());

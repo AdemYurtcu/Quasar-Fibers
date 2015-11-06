@@ -1,4 +1,4 @@
-package co.paralleluniverse.strands.channels.disruptor;
+package com.foreks.feed;
 
 import com.lmax.disruptor.EventFactory;
 

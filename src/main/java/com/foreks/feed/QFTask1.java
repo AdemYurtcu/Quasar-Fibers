@@ -1,6 +1,6 @@
-package co.paralleluniverse.strands.channels.disruptor;
+package com.foreks.feed;
 
-import static co.paralleluniverse.strands.channels.disruptor.UtilExceptions.rethroConsumer;
+import static com.foreks.feed.UtilExceptions.rethroConsumer;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -29,18 +29,16 @@ public class QFTask1 {
     public static void writer() throws ExecutionException, InterruptedException, SuspendExecution {
 
         IntStream.range(0, 100)
-                 .mapToObj((final int index) -> new Fiber<Void>("writer " + index, new FileWriterFibers(index, createChannel(), "")))
+                 .mapToObj((final int index) -> new Fiber<Void>("writer " + index, new FileWriterFibers(index, createChannel())))
                  .forEach(rethroConsumer(f -> f.start().join()));
 
     }
 
-    public static Channel<StringEvent> createChannel() {
-        final Channel<StringEvent> channel = Channels.newChannel(10000, Channels.OverflowPolicy.BLOCK, true, false);
+    public static Channel<String> createChannel() {
+        final Channel<String> channel = Channels.newChannel(10000, Channels.OverflowPolicy.BLOCK, true, false);
         for (int i = 0; i < fileReader.getDataSource().size(); i++) {
             try {
-                final StringEvent strevent = new StringEvent();
-                strevent.setValue(fileReader.get(i));
-                channel.send(strevent);
+                channel.send(fileReader.get(i));
             } catch (SuspendExecution | InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

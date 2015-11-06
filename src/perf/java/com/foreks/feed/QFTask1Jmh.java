@@ -13,8 +13,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import com.foreks.feed.QFTask1;
+
 import co.paralleluniverse.fibers.SuspendExecution;
-import co.paralleluniverse.strands.channels.disruptor.QFTask1;
 
 @State(Scope.Benchmark)
 public class QFTask1Jmh {
