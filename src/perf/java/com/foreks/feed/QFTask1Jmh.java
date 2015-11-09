@@ -1,5 +1,6 @@
 package com.foreks.feed;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -13,8 +14,6 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import com.foreks.feed.QFTask1;
-
 import co.paralleluniverse.fibers.SuspendExecution;
 
 @State(Scope.Benchmark)
@@ -26,7 +25,7 @@ public class QFTask1Jmh {
     @Warmup(iterations = 5)
     @Measurement(iterations = 5)
     @Fork(1)
-    public static void paralellTest() throws ExecutionException, InterruptedException, SuspendExecution {
+    public static void paralellTest() throws ExecutionException, InterruptedException, SuspendExecution, IOException {
         QFTask1.writer();
     }
 

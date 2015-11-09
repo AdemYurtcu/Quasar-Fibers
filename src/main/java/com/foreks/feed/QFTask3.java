@@ -1,5 +1,6 @@
 package com.foreks.feed;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -9,28 +10,37 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.Sequence;
 
 import co.paralleluniverse.fibers.Fiber;
-import co.paralleluniverse.strands.channels.Channel;
+import co.paralleluniverse.strands.channels.disruptor.DisruptorReceiveChannel;
 import co.paralleluniverse.strands.channels.disruptor.StrandBlockingWaitStrategy;
 
 public class QFTask3 {
-    public static final RingBuffer<StringEvent> buffer = RingBuffer.createSingleProducer(StringEvent.FACTORY, 1024, new StrandBlockingWaitStrategy());
+    public static RingBuffer<StringEvent> buffer = null;
+    private static FileReaderFiber        file   = null;
 
-    public static void main(final String[] args) throws ExecutionException, InterruptedException {
+    public static void loadingFile() throws IOException {
+        file = new FileReaderFiber();
+        buffer = RingBuffer.createSingleProducer(StringEvent.FACTORY, 1024, new StrandBlockingWaitStrategy());
+    }
+
+    public static void main(final String[] args) throws ExecutionException, InterruptedException, IOException {
+        loadingFile();
         writer();
     }
 
-    public static void writer() throws ExecutionException, InterruptedException {
-
+    public static void writer() throws ExecutionException, InterruptedException, IOException {
+        loadingFile();
         final List<Fiber<Void>> list = IntStream.range(0, 100)
-                                                .mapToObj(i -> new Fiber<Void>("Consumer" + i, new FileWriterFibers(i, createChannell(), "3")))
+                                                .mapToObj(i -> new Fiber<Void>("Consumer"
+                                                                               + i,
+                                                                               new FileWriterFibers(createChannel(), i, file.getDataSource().size())))
                                                 .collect(Collectors.toList());
+        final Fiber<Void> producer = new Fiber<Void>("producer", () -> {
 
-        final Fiber<Void> producer = new Fiber<Void>("-1", () -> {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < file.getDataSource().size(); i++) {
                 final long sequence = buffer.next();
                 try {
                     final StringEvent e = buffer.get(sequence);
-                    e.setValue("" + i);
+                    e.setValue(file.get(i));
                 } finally {
                     buffer.publish(sequence);
                 }
@@ -38,21 +48,21 @@ public class QFTask3 {
 
         });
         producer.start().join();
+
         list.forEach(f -> {
             try {
-                f.join();
+                f.start().join();
             } catch (final Exception e)
 
             {
                 // TODO Auto-generated catch block
-
                 e.printStackTrace();
             }
         });
     }
 
-    public static Channel<StringEvent> createChannell() {
-        final Channel<StringEvent> channel = new DisruptorChannel(buffer, new Sequence[] {});
-        return channel;
+    public static DisruptorReceiveChannel<StringEvent> createChannel() {
+        final DisruptorReceiveChannel<StringEvent> c = new DisruptorReceiveChannel<StringEvent>(buffer, new Sequence[] {});
+        return c;
     }
 }

@@ -21,8 +21,8 @@ public class QFTask2 {
         System.out.println("task is complated ");
     }
 
-    public static void writer() {
-
+    public static void writer() throws IOException {
+        loadingFile();
         IntStream.range(0, 100).forEach(i -> {
             final File f = new File("Results2/File" + i + ".txt");
             if (!f.exists()) {

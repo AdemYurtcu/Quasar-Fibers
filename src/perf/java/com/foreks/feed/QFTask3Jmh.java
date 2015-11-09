@@ -1,5 +1,6 @@
 package com.foreks.feed;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -11,8 +12,6 @@ import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
 
-import com.foreks.feed.QFTask3;
-
 public class QFTask3Jmh {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
@@ -20,7 +19,7 @@ public class QFTask3Jmh {
     @Warmup(iterations = 5)
     @Measurement(iterations = 5)
     @Fork(1)
-    public static void qFTask3() throws ExecutionException, InterruptedException {
+    public static void ringBufferTest() throws ExecutionException, InterruptedException, IOException {
         QFTask3.writer();
     }
 }

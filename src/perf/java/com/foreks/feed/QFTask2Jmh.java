@@ -1,5 +1,6 @@
 package com.foreks.feed;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -12,8 +13,6 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import com.foreks.feed.QFTask2;
-
 @State(Scope.Benchmark)
 public class QFTask2Jmh {
 
@@ -23,7 +22,7 @@ public class QFTask2Jmh {
     @Warmup(iterations = 5)
     @Measurement(iterations = 5)
     @Fork(1)
-    public static void singleTest() {
+    public static void singleTest() throws IOException {
         QFTask2.writer();
     }
 
