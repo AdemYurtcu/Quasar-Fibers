@@ -26,7 +26,7 @@ public class QFTask1 {
     static int i;
 
     public static void writer(final FileReaderFiber file) throws ExecutionException, InterruptedException, SuspendExecution, IOException {
-        IntStream.range(0, 10)
+        IntStream.range(0, 1000)
                  .mapToObj((final int index) -> new Fiber<Void>("writer " + index, new FileWriterFibers(index, createChannel(file))))
                  .forEach(rethroConsumer(f -> f.start().join()));
 

@@ -29,7 +29,7 @@ public class QFTask3 {
 
     public static void writer(final FileReaderFiber file, final RingBuffer<StringEvent> buffer)
             throws ExecutionException, InterruptedException, IOException {
-        final List<Fiber<Void>> list = IntStream.range(0, 10)
+        final List<Fiber<Void>> list = IntStream.range(0, 1000)
                                                 .mapToObj(i -> new Fiber<Void>("Consumer"
                                                                                + i,
                                                                                new FileWriterFibers(createChannel(buffer),
