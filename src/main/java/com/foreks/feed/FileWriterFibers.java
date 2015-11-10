@@ -90,22 +90,15 @@ public class FileWriterFibers implements SuspendableRunnable {
     @Override
     public void run() throws SuspendExecution, InterruptedException {
         if (null != this.channel) {
-            String receiveStr;
             while (!this.channel.isClosed()) {
-                receiveStr = this.channel.receive();
-                this.pWriter.println(receiveStr);
+                this.pWriter.println(this.channel.receive());
             }
         }
         if (null != this.channel2) {
-            StringEvent receiveString = this.channel2.receive();
             int k = 0;
-            while (true) {
-                this.pWriter.println(receiveString.getValue());
+            while (k < this.bufferSize) {
+                this.pWriter.println(this.channel2.receive());
                 k++;
-                if (k == this.bufferSize) {
-                    break;
-                }
-                receiveString = this.channel2.receive();
             }
         }
         this.pWriter.close();

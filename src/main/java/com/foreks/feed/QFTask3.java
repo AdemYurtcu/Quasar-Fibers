@@ -1,9 +1,7 @@
 package com.foreks.feed;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.lmax.disruptor.RingBuffer;
@@ -28,14 +26,8 @@ public class QFTask3 {
     }
 
     public static void writer(final FileReaderFiber file, final RingBuffer<StringEvent> buffer)
+
             throws ExecutionException, InterruptedException, IOException {
-        final List<Fiber<Void>> list = IntStream.range(0, 1000)
-                                                .mapToObj(i -> new Fiber<Void>("Consumer"
-                                                                               + i,
-                                                                               new FileWriterFibers(createChannel(buffer),
-                                                                                                    i,
-                                                                                                    file.getDataSource().size())))
-                                                .collect(Collectors.toList());
         final Fiber<Void> producer = new Fiber<Void>("producer", () -> {
 
             for (int i = 0; i < file.getDataSource().size(); i++) {
@@ -50,17 +42,16 @@ public class QFTask3 {
 
         });
         producer.start();
-
-        list.forEach(f -> {
-            try {
-                f.start().join();
-            } catch (final Exception e)
-
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        });
+        IntStream.range(0, 1000)
+                 .mapToObj(i -> new Fiber<Void>("Consumer" + i, new FileWriterFibers(createChannel(buffer), i, file.getDataSource().size())))
+                 .forEach(f -> {
+                     try {
+                         f.start().join();
+                     } catch (final Exception e) {
+                         // TODO Auto-generated catch block
+                         e.printStackTrace();
+                     }
+                 });
     }
 
     public static DisruptorReceiveChannel<StringEvent> createChannel(final RingBuffer<StringEvent> buffer) {
