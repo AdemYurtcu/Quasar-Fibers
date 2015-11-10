@@ -17,9 +17,11 @@ repositories {
 }
 sourceSets{
 	perf
+	main
 }
 configurations{
 	perfCompile
+	quasar
 }
 project.sourceSets.perf {
   compileClasspath += project.configurations.perfCompile + project.sourceSets.main.output
@@ -27,6 +29,7 @@ project.sourceSets.perf {
 }
 dependencies{
 	compile 'co.paralleluniverse:quasar-core:0.7.4-SNAPSHOT'
+	quasar 'co.paralleluniverse:quasar-core:0.7.4-SNAPSHOT'
 	compile 'com.lmax:disruptor:3.3.2'
 	compile 'org.apache.commons:commons-collections4:4.0'
     compile (
@@ -59,6 +62,10 @@ task perfJar(type: Jar, dependsOn: perfClasses) {
 task jmh(type: JavaExec, dependsOn: perfJar) {
   main = 'org.openjdk.jmh.Main'
   classpath = project.files(project.perfJar.archivePath) + project.sourceSets.main.runtimeClasspath
+  jvmArgs "-javaagent:${configurations.quasar.iterator().next()}"
 }
+
+
+
 
 

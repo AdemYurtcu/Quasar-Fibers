@@ -17,19 +17,29 @@ public class QFTask2 {
 
     public static void main(final String[] args) throws IOException {
         loadingFile();
-        writer();
+        writer(file);
         System.out.println("task is complated ");
     }
 
-    public static void writer() throws IOException {
-        loadingFile();
-        IntStream.range(0, 100).forEach(i -> {
+    public static void writer(final FileReaderFiber file) throws IOException {
+        IntStream.range(0, 10).forEach(i -> {
+            final File folder = new File("Results2");
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
             final File f = new File("Results2/File" + i + ".txt");
             if (!f.exists()) {
                 try {
                     f.createNewFile();
                 } catch (final IOException e) {
                     System.out.println(e.getMessage());
+                }
+            } else {
+                f.delete();
+                try {
+                    f.createNewFile();
+                } catch (final Exception e) {
+                    e.printStackTrace();
                 }
             }
 

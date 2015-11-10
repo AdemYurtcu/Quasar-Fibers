@@ -11,6 +11,7 @@ import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
@@ -18,6 +19,12 @@ import co.paralleluniverse.fibers.SuspendExecution;
 
 @State(Scope.Benchmark)
 public class QFTask1Jmh {
+    public static FileReaderFiber file;
+
+    @Setup
+    public static void loadingFile() throws IOException {
+        file = new FileReaderFiber();
+    }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
@@ -26,7 +33,7 @@ public class QFTask1Jmh {
     @Measurement(iterations = 5)
     @Fork(1)
     public static void paralellTest() throws ExecutionException, InterruptedException, SuspendExecution, IOException {
-        QFTask1.writer();
+        QFTask1.writer(file);
     }
 
 }

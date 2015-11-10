@@ -10,11 +10,18 @@ import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 @State(Scope.Benchmark)
 public class QFTask2Jmh {
+    public static FileReaderFiber file;
+
+    @Setup
+    public static void loadingFile() throws IOException {
+        file = new FileReaderFiber();
+    }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
@@ -23,7 +30,7 @@ public class QFTask2Jmh {
     @Measurement(iterations = 5)
     @Fork(1)
     public static void singleTest() throws IOException {
-        QFTask2.writer();
+        QFTask2.writer(file);
     }
 
 }

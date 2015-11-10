@@ -16,29 +16,27 @@ public class QFTask1 {
 
     public static void loadingFile() throws IOException {
         fileReader = new FileReaderFiber();
-
     }
 
     public static void main(final String[] args) throws IOException, ExecutionException, InterruptedException, SuspendExecution {
         loadingFile();
-        writer();
+        writer(fileReader);
         System.out.println("Task is complated");
     }
     static int i;
 
-    public static void writer() throws ExecutionException, InterruptedException, SuspendExecution, IOException {
-        loadingFile();
-        IntStream.range(0, 100)
-                 .mapToObj((final int index) -> new Fiber<Void>("writer " + index, new FileWriterFibers(index, createChannel())))
+    public static void writer(final FileReaderFiber file) throws ExecutionException, InterruptedException, SuspendExecution, IOException {
+        IntStream.range(0, 10)
+                 .mapToObj((final int index) -> new Fiber<Void>("writer " + index, new FileWriterFibers(index, createChannel(file))))
                  .forEach(rethroConsumer(f -> f.start().join()));
 
     }
 
-    public static Channel<String> createChannel() {
+    public static Channel<String> createChannel(final FileReaderFiber file) {
         final Channel<String> channel = Channels.newChannel(10000, Channels.OverflowPolicy.BLOCK, true, false);
-        for (int i = 0; i < fileReader.getDataSource().size(); i++) {
+        for (int i = 0; i < file.getDataSource().size(); i++) {
             try {
-                channel.send(fileReader.get(i));
+                channel.send(file.get(i));
             } catch (SuspendExecution | InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

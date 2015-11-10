@@ -24,15 +24,17 @@ public class QFTask3 {
 
     public static void main(final String[] args) throws ExecutionException, InterruptedException, IOException {
         loadingFile();
-        writer();
+        writer(file, buffer);
     }
 
-    public static void writer() throws ExecutionException, InterruptedException, IOException {
-        loadingFile();
-        final List<Fiber<Void>> list = IntStream.range(0, 100)
+    public static void writer(final FileReaderFiber file, final RingBuffer<StringEvent> buffer)
+            throws ExecutionException, InterruptedException, IOException {
+        final List<Fiber<Void>> list = IntStream.range(0, 10)
                                                 .mapToObj(i -> new Fiber<Void>("Consumer"
                                                                                + i,
-                                                                               new FileWriterFibers(createChannel(), i, file.getDataSource().size())))
+                                                                               new FileWriterFibers(createChannel(buffer),
+                                                                                                    i,
+                                                                                                    file.getDataSource().size())))
                                                 .collect(Collectors.toList());
         final Fiber<Void> producer = new Fiber<Void>("producer", () -> {
 
@@ -47,7 +49,7 @@ public class QFTask3 {
             }
 
         });
-        producer.start().join();
+        producer.start();
 
         list.forEach(f -> {
             try {
@@ -61,7 +63,7 @@ public class QFTask3 {
         });
     }
 
-    public static DisruptorReceiveChannel<StringEvent> createChannel() {
+    public static DisruptorReceiveChannel<StringEvent> createChannel(final RingBuffer<StringEvent> buffer) {
         final DisruptorReceiveChannel<StringEvent> c = new DisruptorReceiveChannel<StringEvent>(buffer, new Sequence[] {});
         return c;
     }

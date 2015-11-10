@@ -22,12 +22,23 @@ public class FileWriterFibers implements SuspendableRunnable {
     public FileWriterFibers(final int id, final Channel<String> c) {
         this.channel = c;
         this.id = id;
+        final File folder = new File("Results");
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
         final File f = new File("Results/File" + this.id + ".txt");
         if (!f.exists()) {
             try {
                 f.createNewFile();
             } catch (final IOException e) {
                 System.out.println(e.getMessage());
+            }
+        } else {
+            f.delete();
+            try {
+                f.createNewFile();
+            } catch (final IOException e) {
+                e.printStackTrace();
             }
         }
 
@@ -36,7 +47,6 @@ public class FileWriterFibers implements SuspendableRunnable {
             final BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             this.pWriter = new PrintWriter(bufferedWriter);
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         this.channel2 = null;
@@ -46,12 +56,23 @@ public class FileWriterFibers implements SuspendableRunnable {
     public FileWriterFibers(final DisruptorReceiveChannel<StringEvent> c, final int i, final int size) {
         this.channel2 = c;
         this.id = i;
+        final File folder = new File("Results3");
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
         final File f = new File("Results3/File" + this.id + ".txt");
         if (!f.exists()) {
             try {
                 f.createNewFile();
             } catch (final IOException e) {
                 System.out.println(e.getMessage());
+            }
+        } else {
+            f.delete();
+            try {
+                f.createNewFile();
+            } catch (final IOException e) {
+                e.printStackTrace();
             }
         }
         try {
@@ -69,17 +90,16 @@ public class FileWriterFibers implements SuspendableRunnable {
     @Override
     public void run() throws SuspendExecution, InterruptedException {
         if (null != this.channel) {
-            String receiveStr = this.channel.receive();
+            String receiveStr;
             while (!this.channel.isClosed()) {
-                this.pWriter.println(receiveStr);
                 receiveStr = this.channel.receive();
+                this.pWriter.println(receiveStr);
             }
         }
         if (null != this.channel2) {
             StringEvent receiveString = this.channel2.receive();
             int k = 0;
-            final boolean check = false;
-            while (!check) {
+            while (true) {
                 this.pWriter.println(receiveString.getValue());
                 k++;
                 if (k == this.bufferSize) {
